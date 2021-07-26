@@ -31,12 +31,13 @@ var gameEvents = [...]string{"app_start", "having_fun", "getting_bored", "donate
 func main() {
 	for {
 		time.Sleep(2 * time.Second)
-		//fmt.Println()
-		sendLogs(createLogs(17))
+		sendLogs(createLogs(10000))
 	}
 }
 
 func createLogs(logNum int) []log {
+	start := time.Now()
+
 	wg := &sync.WaitGroup{}
 	bunch := make([]log, 0, logNum)
 
@@ -69,9 +70,11 @@ func createLogs(logNum int) []log {
 	wg.Wait()
 
 	for i := 0; i < routineCount; i++ {
-		//fmt.Println(<-logChan)
 		bunch = append(bunch, <-logChan...)
 	}
+
+	duration := time.Since(start)
+	fmt.Println(logNum, "MADE FOR", duration)
 
 	return bunch
 }
@@ -115,11 +118,9 @@ func sendLogs(logs []log) {
 
 func sendLogsRequest(logs string) bool {
 	url := "http://logReceiver:8080/logs"
-	fmt.Println("URL:>", url)
 
 	rawLogs := rawLogs{Logs: logs}
 	rawLogsBytes, _ := json.Marshal(rawLogs)
-	fmt.Println(string(rawLogsBytes))
 
 	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(rawLogsBytes))
 	req.Header.Set("Content-Type", "application/json")
@@ -130,8 +131,6 @@ func sendLogsRequest(logs string) bool {
 		panic(err)
 	}
 	defer resp.Body.Close()
-
-	fmt.Println("response Status:", resp.Status)
 
 	return true
 }

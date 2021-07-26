@@ -52,6 +52,8 @@ func main() {
 }
 
 func serveLogs(w http.ResponseWriter, r *http.Request) {
+	start := time.Now()
+
 	if r.Method != http.MethodPost {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
@@ -61,6 +63,9 @@ func serveLogs(w http.ResponseWriter, r *http.Request) {
 	enrichedLogs := enrichLogs(logs, r.RemoteAddr)
 
 	go saveToClickhouse(enrichedLogs)
+
+	duration := time.Since(start)
+	fmt.Println("10000 logs are served for: ", duration)
 
 	w.WriteHeader(http.StatusOK)
 	return
@@ -143,12 +148,10 @@ func enrichLog(logChan chan<- []enrichedLogs, logs []logs, remoteAddr string, wg
 }
 
 func saveToClickhouse(enrichedLogs []enrichedLogs) {
-	fmt.Println("SAVE")
 
 	// Making transaction
 	tx, err := DBConnect.Begin()
 	if err != nil {
-		fmt.Println("MAKING TX", err.Error())
 		log.Fatal(err)
 	}
 
@@ -169,7 +172,6 @@ func saveToClickhouse(enrichedLogs []enrichedLogs) {
 			?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 		)`)
 	if err != nil {
-		fmt.Println("MAKING BLUEPRINT", err.Error())
 		log.Fatal(err)
 	}
 
