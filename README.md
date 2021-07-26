@@ -43,6 +43,14 @@
 docker compose up
 ```
 
+### Серьезно работает?
+Ага. Можно заглянуть в Базу Данных:
+```
+http://localhost:8123/play
+
+select * from sayGames.logs
+```
+
 ### Сервисы
 - <b> log-generator </b> - Генерирует логи приходящие от клиента пачками. Шлет логи POST-запросом в log-receiver.
 - <b> log-receiver </b> - Принимает логи от клиентов, обрабатывает, обогощает и пишет в Clickhouse транзакциями.
