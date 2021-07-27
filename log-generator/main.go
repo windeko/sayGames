@@ -31,7 +31,7 @@ var gameEvents = [...]string{"app_start", "having_fun", "getting_bored", "donate
 func main() {
 	for {
 		time.Sleep(2 * time.Second)
-		sendLogs(createLogs(10000))
+		sendLogs(createLogs(30))
 	}
 }
 
@@ -117,10 +117,13 @@ func sendLogs(logs []log) {
 }
 
 func sendLogsRequest(logs string) bool {
-	url := "http://logReceiver:8080/logs"
+	//url := "http://logReceiver:8080/logs"
+	url := "http://localhost:8080/logs"
 
 	rawLogs := rawLogs{Logs: logs}
 	rawLogsBytes, _ := json.Marshal(rawLogs)
+
+	fmt.Println(string(rawLogsBytes))
 
 	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(rawLogsBytes))
 	req.Header.Set("Content-Type", "application/json")

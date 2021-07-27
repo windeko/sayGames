@@ -65,3 +65,30 @@ select * from sayGames.logs
 который который работает по принципу кодогенерации и дает отличный прирост к скорости,
 но это тестовое задание.
 Понять простить.
+
+### Benchmark
+```
+ab -k -p abjson.txt -T application/json -c 1 -n 100 http://localhost:8080/logs
+
+Server Software:
+Server Hostname:        localhost
+Server Port:            8080
+
+Document Path:          /logs
+Document Length:        0 bytes
+
+Concurrency Level:      1
+Time taken for tests:   0.124 seconds
+Complete requests:      100
+Failed requests:        0
+Keep-Alive requests:    100
+Total transferred:      9900 bytes
+Total body sent:        762100
+HTML transferred:       0 bytes
+Requests per second:    803.87 [#/sec] (mean)
+Time per request:       1.244 [ms] (mean)
+Time per request:       1.244 [ms] (mean, across all concurrent requests)
+Transfer rate:          77.72 [Kbytes/sec] received
+                        5982.72 kb/s sent
+                        6060.44 kb/s total
+```

@@ -7,6 +7,7 @@ import (
 	_ "github.com/mailru/go-clickhouse"
 	"log"
 	"net/http"
+	_ "net/http/pprof"
 	"strings"
 	"sync"
 	"time"
@@ -37,7 +38,8 @@ var DBConnect *sql.DB
 
 func main() {
 	var err error
-	DBConnect, err = sql.Open("clickhouse", "http://clickhouse_server:8123/sayGames")
+	//DBConnect, err = sql.Open("clickhouse", "http://clickhouse_server:8123/sayGames")
+	DBConnect, err = sql.Open("clickhouse", "http://localhost:8123/sayGames")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -65,7 +67,7 @@ func serveLogs(w http.ResponseWriter, r *http.Request) {
 	go saveToClickhouse(enrichedLogs)
 
 	duration := time.Since(start)
-	fmt.Println("10000 logs are served for: ", duration)
+	fmt.Println(len(enrichedLogs), "logs are served for: ", duration)
 
 	w.WriteHeader(http.StatusOK)
 	return
