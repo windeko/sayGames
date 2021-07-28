@@ -35,6 +35,9 @@ type enrichedLogs struct {
 }
 
 var DBConnect *sql.DB
+var dump = make([]enrichedLogs, 0, 6000)
+var dumpThreshold int = 5000
+var mu = sync.Mutex{}
 
 func main() {
 	var err error
@@ -62,12 +65,19 @@ func serveLogs(w http.ResponseWriter, r *http.Request) {
 	}
 
 	logs := readLogsFromBody(r)
-	enrichedLogs := enrichLogs(logs, r.RemoteAddr)
 
-	go saveToClickhouse(enrichedLogs)
+	mu.Lock()
+	dump = append(dump, enrichLogs(logs, r.RemoteAddr)...)
+	fmt.Println(len(dump))
+	if len(dump) > dumpThreshold {
+		go saveToClickhouse(dump[:dumpThreshold])
+		dump = dump[dumpThreshold:]
+		fmt.Println(dumpThreshold, "logs are saved to DB")
+	}
+	mu.Unlock()
 
 	duration := time.Since(start)
-	fmt.Println(len(enrichedLogs), "logs are served for: ", duration)
+	fmt.Println(len(logs), "logs are served for: ", duration)
 
 	w.WriteHeader(http.StatusOK)
 	return

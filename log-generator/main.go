@@ -30,7 +30,6 @@ var gameEvents = [...]string{"app_start", "having_fun", "getting_bored", "donate
 
 func main() {
 	for {
-		time.Sleep(2 * time.Second)
 		sendLogs(createLogs(30))
 	}
 }

@@ -68,7 +68,7 @@ select * from sayGames.logs
 
 ### Benchmark
 ```
-ab -k -p abjson.txt -T application/json -c 1 -n 100 http://localhost:8080/logs
+ab -k -p abjson.txt -T application/json -c 6 -n 100 -t 5 http://localhost:8080/logs
 
 Server Software:
 Server Hostname:        localhost
@@ -77,18 +77,18 @@ Server Port:            8080
 Document Path:          /logs
 Document Length:        0 bytes
 
-Concurrency Level:      1
-Time taken for tests:   0.124 seconds
-Complete requests:      100
+Concurrency Level:      6
+Time taken for tests:   5.048 seconds
+Complete requests:      5490
 Failed requests:        0
-Keep-Alive requests:    100
-Total transferred:      9900 bytes
-Total body sent:        762100
+Keep-Alive requests:    5490
+Total transferred:      543510 bytes
+Total body sent:        41885016
 HTML transferred:       0 bytes
-Requests per second:    803.87 [#/sec] (mean)
-Time per request:       1.244 [ms] (mean)
-Time per request:       1.244 [ms] (mean, across all concurrent requests)
-Transfer rate:          77.72 [Kbytes/sec] received
-                        5982.72 kb/s sent
-                        6060.44 kb/s total
+Requests per second:    1087.58 [#/sec] (mean)
+Time per request:       5.517 [ms] (mean)
+Time per request:       0.919 [ms] (mean, across all concurrent requests)
+Transfer rate:          105.15 [Kbytes/sec] received
+                        8103.02 kb/s sent
+                        8208.17 kb/s total
 ```
