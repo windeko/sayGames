@@ -25,14 +25,14 @@ services:
     image: golang:1.16.6-alpine3.14
     container_name: logReceiver
     depends_on:
-      - clickhouse_server
-    command: sh -c "/entrypoints/wait-for/wait-for.sh clickhouse_server:8123 && go mod download && go run main.go"
+      - clickhouseServer
+    command: sh -c "/entrypoints/wait-for/wait-for.sh clickhouseServer:8123 && go mod download && go run main.go"
     volumes:
       - ./entrypoints:/entrypoints
       - ./log-receiver:/app
     working_dir: /app
     links:
-      - clickhouse_server
+      - clickhouseServer
     ports:
       - 8080:8080
     deploy:
@@ -44,13 +44,12 @@ services:
     networks:
       - say_games
 
-  clickhouse_server:
+  clickhouseServer:
     image: yandex/clickhouse-server
     container_name: clickhouseServer
     ports:
       - "8123:8123"
     volumes:
-      - ./db:/var/lib/clickhouse
       - ./entrypoints/init-db:/docker-entrypoint-initdb.d
     networks:
       - say_games

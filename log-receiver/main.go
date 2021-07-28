@@ -41,7 +41,7 @@ var mu = sync.Mutex{}
 
 func main() {
 	var err error
-	DBConnect, err = sql.Open("clickhouse", "http://clickhouse_server:8123/sayGames")
+	DBConnect, err = sql.Open("clickhouse", "http://clickhouseServer:8123/sayGames")
 	//DBConnect, err = sql.Open("clickhouse", "http://localhost:8123/sayGames")
 	if err != nil {
 		log.Fatal(err)
