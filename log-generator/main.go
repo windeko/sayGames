@@ -117,8 +117,8 @@ func sendLogs(logs []log) {
 }
 
 func sendLogsRequest(logs string) bool {
-	//url := "http://logReceiver:8080/logs"
-	url := "http://localhost:8080/logs"
+	url := "http://logReceiver:8080/logs"
+	//url := "http://localhost:8080/logs"
 
 	rawLogs := rawLogs{Logs: logs}
 	rawLogsBytes, _ := json.Marshal(rawLogs)
