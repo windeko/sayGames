@@ -30,7 +30,6 @@ services:
     volumes:
       - ./entrypoints:/entrypoints
       - ./log-receiver:/app
-      - ./:/go/src/github.com/windeko/sayGames
     working_dir: /app
     links:
       - clickhouseServer
