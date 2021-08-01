@@ -5,7 +5,7 @@ services:
     container_name: logGenerator
     depends_on:
       - logReceiver
-    command: sh -c "/entrypoints/wait-for/wait-for.sh logReceiver:8080 && go mod vendor && go run main.go"
+    command: sh -c "/entrypoints/wait-for/wait-for.sh logReceiver:8080 && go clean && go mod tidy && go mod vendor && go run main.go"
     volumes:
       - ./entrypoints:/entrypoints
       - ./log-generator:/app
@@ -26,7 +26,7 @@ services:
     container_name: logReceiver
     depends_on:
       - clickhouseServer
-    command: sh -c "/entrypoints/wait-for/wait-for.sh clickhouseServer:8123 && go mod download && go run main.go"
+    command: sh -c "/entrypoints/wait-for/wait-for.sh clickhouseServer:8123 && go clean && go mod tidy && go mod download && go mod vendor && go run main.go"
     volumes:
       - ./entrypoints:/entrypoints
       - ./log-receiver:/app
