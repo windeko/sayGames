@@ -1,5 +1,5 @@
-module example.com/logsHandler
+module github.com/windeko/sayGames
 
 go 1.16
 
-require github.com/windeko/sayGames v0.0.0-20210728165057-0c3df2a6c85b // indirect
+require github.com/windeko/sayGames latest // indirect
