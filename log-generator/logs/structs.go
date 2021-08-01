@@ -22,6 +22,12 @@ type RawLogs struct {
 	Logs string `json:"logs"`
 }
 
+type EnrichedLogs struct {
+	Log
+	IP         string `json:"ip"`
+	ServerTime string `json:"server_time"`
+}
+
 type LogSlice []Log
 
 func (logs LogSlice) prepareLogReqBody() RawLogs {

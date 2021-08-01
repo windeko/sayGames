@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	_ "github.com/mailru/go-clickhouse"
+	"github.com/windeko/sayGames/log-generator/logs"
 	"log"
 	"net/http"
 	_ "net/http/pprof"
@@ -13,29 +14,29 @@ import (
 	"time"
 )
 
-type rawLogs struct {
-	Logs string `json:"logs"`
-}
+//type rawLogs struct {
+//	Logs string `json:"logs"`
+//}
+//
+//type logs struct {
+//	ClientTime string `json:"client_time"`
+//	DeviceId   string `json:"device_id"`
+//	DeviceOs   string `json:"device_os"`
+//	Session    string `json:"session"`
+//	Sequence   int    `json:"sequence"`
+//	Event      string `json:"event"`
+//	ParamInt   int    `json:"param_int"`
+//	ParamStr   string `json:"param_str"`
+//}
 
-type logs struct {
-	ClientTime string `json:"client_time"`
-	DeviceId   string `json:"device_id"`
-	DeviceOs   string `json:"device_os"`
-	Session    string `json:"session"`
-	Sequence   int    `json:"sequence"`
-	Event      string `json:"event"`
-	ParamInt   int    `json:"param_int"`
-	ParamStr   string `json:"param_str"`
-}
-
-type enrichedLogs struct {
-	logs
-	IP         string `json:"ip"`
-	ServerTime string `json:"server_time"`
-}
+//type enrichedLogs struct {
+//	logs
+//	IP         string `json:"ip"`
+//	ServerTime string `json:"server_time"`
+//}
 
 var DBConnect *sql.DB
-var dump = make([]enrichedLogs, 0, 6000)
+var dump = make([]logs.EnrichedLogs, 0, 6000)
 var dumpThreshold int = 5000
 var mu = sync.Mutex{}
 
@@ -64,10 +65,10 @@ func serveLogs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logs := readLogsFromBody(r)
+	reqLogs := readLogsFromBody(r)
 
 	mu.Lock()
-	dump = append(dump, enrichLogs(logs, r.RemoteAddr)...)
+	dump = append(dump, enrichLogs(reqLogs, r.RemoteAddr)...)
 	fmt.Println(len(dump))
 	if len(dump) > dumpThreshold {
 		go saveToClickhouse(dump[:dumpThreshold])
@@ -77,34 +78,34 @@ func serveLogs(w http.ResponseWriter, r *http.Request) {
 	mu.Unlock()
 
 	duration := time.Since(start)
-	fmt.Println(len(logs), "logs are served for: ", duration)
+	fmt.Println(len(reqLogs), "logs are served for: ", duration)
 
 	w.WriteHeader(http.StatusOK)
 	return
 }
 
-func readLogsFromBody(r *http.Request) []logs {
+func readLogsFromBody(r *http.Request) logs.LogSlice {
 	decoder := json.NewDecoder(r.Body)
-	var t rawLogs
+	var t logs.RawLogs
 	err := decoder.Decode(&t)
 	if err != nil {
 		panic(err)
 	}
 
-	var res []logs
+	var res logs.LogSlice
 	for _, strLog := range strings.Split(t.Logs, "\n") {
-		log := &logs{}
-		json.Unmarshal([]byte(strLog), log)
-		res = append(res, *log)
+		aLog := &logs.Log{}
+		json.Unmarshal([]byte(strLog), aLog)
+		res = append(res, *aLog)
 	}
 
 	return res
 }
 
-func enrichLogs(logs []logs, remoteAddr string) []enrichedLogs {
+func enrichLogs(logSlice logs.LogSlice, remoteAddr string) []logs.EnrichedLogs {
 	wg := &sync.WaitGroup{}
-	logNum := len(logs)
-	bunch := make([]enrichedLogs, 0, logNum)
+	logNum := len(logSlice)
+	bunch := make([]logs.EnrichedLogs, 0, logNum)
 
 	// Количество используемых горутин. Впринципе можно вынести в environment
 	defaultRoutineCount, routineCount := 5, 5
@@ -117,20 +118,20 @@ func enrichLogs(logs []logs, remoteAddr string) []enrichedLogs {
 	}
 
 	// Делаем буферизированный канал в который будем писать из нескольких рутин
-	logChan := make(chan []enrichedLogs, routineCount)
+	logChan := make(chan []logs.EnrichedLogs, routineCount)
 
 	// Пускаем в несколько горутин
 	if logNum/defaultRoutineCount > 0 {
 		for i := 0; i < defaultRoutineCount; i++ {
 			wg.Add(1)
-			go enrichLog(logChan, logs[i*logNum/defaultRoutineCount:(i+1)*logNum/defaultRoutineCount], remoteAddr, wg)
+			go enrichLog(logChan, logSlice[i*logNum/defaultRoutineCount:(i+1)*logNum/defaultRoutineCount], remoteAddr, wg)
 		}
 	}
 
 	// И еще одна горутина чтобы подбить остаток если он есть
 	if logNum%defaultRoutineCount > 0 {
 		wg.Add(1)
-		go enrichLog(logChan, logs[logNum-(logNum%defaultRoutineCount):], remoteAddr, wg)
+		go enrichLog(logChan, logSlice[logNum-(logNum%defaultRoutineCount):], remoteAddr, wg)
 	}
 
 	wg.Wait()
@@ -142,16 +143,16 @@ func enrichLogs(logs []logs, remoteAddr string) []enrichedLogs {
 	return bunch
 }
 
-func enrichLog(logChan chan<- []enrichedLogs, logs []logs, remoteAddr string, wg *sync.WaitGroup) {
+func enrichLog(logChan chan<- []logs.EnrichedLogs, logSlice logs.LogSlice, remoteAddr string, wg *sync.WaitGroup) {
 	defer wg.Done()
 
-	num := len(logs)
+	num := len(logSlice)
 
-	bunch := make([]enrichedLogs, 0, num)
+	bunch := make([]logs.EnrichedLogs, 0, num)
 
-	for _, log := range logs {
+	for _, aLog := range logSlice {
 		curTime := time.Now()
-		var eLog = enrichedLogs{logs: log, ServerTime: curTime.Format("2006-01-02 15:04:05"), IP: remoteAddr}
+		var eLog = logs.EnrichedLogs{Log: aLog, ServerTime: curTime.Format("2006-01-02 15:04:05"), IP: remoteAddr}
 
 		bunch = append(bunch, eLog)
 	}
@@ -159,7 +160,7 @@ func enrichLog(logChan chan<- []enrichedLogs, logs []logs, remoteAddr string, wg
 	logChan <- bunch
 }
 
-func saveToClickhouse(enrichedLogs []enrichedLogs) {
+func saveToClickhouse(enrichedLogs []logs.EnrichedLogs) {
 
 	// Making transaction
 	tx, err := DBConnect.Begin()
