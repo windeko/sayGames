@@ -26,10 +26,11 @@ services:
     container_name: logReceiver
     depends_on:
       - clickhouseServer
-    command: sh -c "/entrypoints/wait-for/wait-for.sh clickhouseServer:8123 && go clean && go mod tidy && go mod download && go mod vendor && go run main.go"
+    command: sh -c "/entrypoints/wait-for/wait-for.sh clickhouseServer:8123 && go clean && go mod tidy && go mod vendor && go run main.go"
     volumes:
       - ./entrypoints:/entrypoints
       - ./log-receiver:/app
+      - ./:/go/src/github.com/windeko/sayGames
     working_dir: /app
     links:
       - clickhouseServer

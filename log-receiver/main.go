@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	_ "github.com/mailru/go-clickhouse"
-	"github.com/windeko/sayGames/log-generator/logs"
+	"github.com/windeko/sayGames/log-receiver/logs"
 	"log"
 	"net/http"
 	_ "net/http/pprof"
@@ -13,27 +13,6 @@ import (
 	"sync"
 	"time"
 )
-
-//type rawLogs struct {
-//	Logs string `json:"logs"`
-//}
-//
-//type logs struct {
-//	ClientTime string `json:"client_time"`
-//	DeviceId   string `json:"device_id"`
-//	DeviceOs   string `json:"device_os"`
-//	Session    string `json:"session"`
-//	Sequence   int    `json:"sequence"`
-//	Event      string `json:"event"`
-//	ParamInt   int    `json:"param_int"`
-//	ParamStr   string `json:"param_str"`
-//}
-
-//type enrichedLogs struct {
-//	logs
-//	IP         string `json:"ip"`
-//	ServerTime string `json:"server_time"`
-//}
 
 var DBConnect *sql.DB
 var dump = make([]logs.EnrichedLogs, 0, 6000)
