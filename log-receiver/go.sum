@@ -9,7 +9,7 @@ github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZN
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/testify v1.3.0 h1:TivCn/peBQ7UY8ooIcPgZFpTNSz0Q2U6UrFlUfqbe0Q=
 github.com/stretchr/testify v1.3.0/go.mod h1:M5WIy9Dh21IEIfnGCwXGc5bZfKNJtfHm1UVUgZn+9EI=
-github.com/windeko/sayGames v0.0.0-20210801101607-9ea27f8e781c h1:48u7t9sZLefwZ+FpBbckDUcrUuzutrWY20U/fduHi6U=
-github.com/windeko/sayGames v0.0.0-20210801101607-9ea27f8e781c/go.mod h1:VU4havLwNVOmi+F+5TEaAIr5uLgYTFH6TF10tbs22xA=
-github.com/windeko/sayGames/log-generator v0.0.0-20210801094515-80788e573936 h1:TW7GbdKBLmn4cugrTPf8bheNRxbiJxqFQO4W3xOx/zI=
-github.com/windeko/sayGames/log-generator v0.0.0-20210801094515-80788e573936/go.mod h1:BbdSShZ/zDxITfwTsljYkiVzJw/bGXUPdwjuDRFukDw=
+github.com/windeko/sayGames/log-generator v0.0.0-20210801101607-9ea27f8e781c h1:bJ02tZxtmg1VxrAnlSGyLRt2I6pTHUx7kU+xbBXzzoQ=
+github.com/windeko/sayGames/log-generator v0.0.0-20210801101607-9ea27f8e781c/go.mod h1:BbdSShZ/zDxITfwTsljYkiVzJw/bGXUPdwjuDRFukDw=
+github.com/windeko/sayGames/log-generator v0.0.0-20210801112618-8ef4c91ea89a h1:6fruuP6MNAyJsPRE2PU/NlAO2BPUqV1/N7tGR1vHNYs=
+github.com/windeko/sayGames/log-generator v0.0.0-20210801112618-8ef4c91ea89a/go.mod h1:BbdSShZ/zDxITfwTsljYkiVzJw/bGXUPdwjuDRFukDw=

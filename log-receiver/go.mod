@@ -4,5 +4,5 @@ go 1.16
 
 require (
 	github.com/mailru/go-clickhouse v1.6.0
-	github.com/windeko/sayGames v0.0.0-20210801101607-9ea27f8e781c
+	github.com/windeko/sayGames/log-generator v0.0.0-20210801112618-8ef4c91ea89a
 )
